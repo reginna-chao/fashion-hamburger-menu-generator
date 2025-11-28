@@ -17,7 +17,12 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
   const activeLayerRef = useRef<SVGGElement>(null);
   const ghostLayerRef = useRef<SVGGElement>(null);
   const controlsLayerRef = useRef<SVGGElement>(null);
+  const connectionLayerRef = useRef<SVGGElement>(null);
   const [draggedPoint, setDraggedPoint] = useState<DraggedPoint | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<{
+    lineIndex: number;
+    pointIndex: number;
+  } | null>(null);
 
   // Render paths and controls
   useEffect(() => {
@@ -26,13 +31,15 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     const activeLayer = activeLayerRef.current;
     const ghostLayer = ghostLayerRef.current;
     const controlsLayer = controlsLayerRef.current;
+    const connectionLayer = connectionLayerRef.current;
 
-    if (!activeLayer || !ghostLayer || !controlsLayer) return;
+    if (!activeLayer || !ghostLayer || !controlsLayer || !connectionLayer) return;
 
     // Clear layers
     activeLayer.innerHTML = '';
     ghostLayer.innerHTML = '';
     controlsLayer.innerHTML = '';
+    connectionLayer.innerHTML = '';
 
     lines.forEach((line, index) => {
       const activePoints = line[mode];
@@ -68,7 +75,34 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         controlsLayer.appendChild(circle);
       });
     });
-  }, [lines, mode]);
+
+    // Draw connection line if a point is hovered
+    if (hoveredPoint !== null) {
+      const { lineIndex, pointIndex } = hoveredPoint;
+      const activePoint = lines[lineIndex][mode][pointIndex];
+      const correspondingPoint = lines[lineIndex][mode === 'menu' ? 'close' : 'menu'][pointIndex];
+
+      const connectionLine = document.createElementNS(SVG_NS, 'line');
+      connectionLine.setAttribute('x1', activePoint.x.toString());
+      connectionLine.setAttribute('y1', activePoint.y.toString());
+      connectionLine.setAttribute('x2', correspondingPoint.x.toString());
+      connectionLine.setAttribute('y2', correspondingPoint.y.toString());
+      connectionLine.classList.add(styles.connectionLine);
+      connectionLayer.appendChild(connectionLine);
+
+      // Highlight corresponding point
+      const correspondingCircle = document.createElementNS(SVG_NS, 'circle');
+      correspondingCircle.setAttribute('cx', correspondingPoint.x.toString());
+      correspondingCircle.setAttribute('cy', correspondingPoint.y.toString());
+      correspondingCircle.setAttribute('r', '6');
+      correspondingCircle.setAttribute(
+        'style',
+        `transform-origin: ${correspondingPoint.x}px ${correspondingPoint.y}px;`
+      );
+      correspondingCircle.classList.add(styles.correspondingPoint);
+      connectionLayer.appendChild(correspondingCircle);
+    }
+  }, [lines, mode, hoveredPoint]);
 
   const getSVGPoint = (event: MouseEvent): DOMPoint => {
     const svg = svgRef.current;
@@ -95,6 +129,22 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         originX: currentPoint.x,
         originY: currentPoint.y,
       });
+    }
+  };
+
+  const handleMouseOver = (e: React.MouseEvent<SVGSVGElement>) => {
+    const target = e.target as Element;
+    if (target.classList.contains(styles.controlPoint)) {
+      const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
+      const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
+      setHoveredPoint({ lineIndex, pointIndex });
+    }
+  };
+
+  const handleMouseOut = (e: React.MouseEvent<SVGSVGElement>) => {
+    const target = e.target as Element;
+    if (target.classList.contains(styles.controlPoint)) {
+      setHoveredPoint(null);
     }
   };
 
@@ -148,7 +198,14 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
   return (
     <div className={styles.editorArea}>
-      <svg ref={svgRef} className={styles.editorSvg} viewBox="0 0 100 100" onMouseDown={handleMouseDown}>
+      <svg
+        ref={svgRef}
+        className={styles.editorSvg}
+        viewBox="0 0 100 100"
+        onMouseDown={handleMouseDown}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
         {/* Grid lines for reference */}
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -167,6 +224,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
         {/* Active paths */}
         <g ref={activeLayerRef} id="active-layer"></g>
+
+        {/* Connection lines */}
+        <g ref={connectionLayerRef} id="connection-layer"></g>
 
         {/* Control points */}
         <g ref={controlsLayerRef} id="controls-layer"></g>
