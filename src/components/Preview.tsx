@@ -1,7 +1,14 @@
 import { useRef, useEffect } from 'react';
+import type { Method } from '../types';
 
-export default function Preview({ html, css, method }) {
-  const containerRef = useRef(null);
+interface PreviewProps {
+  html: string;
+  css: string;
+  method: Method;
+}
+
+export default function Preview({ html, css, method }: PreviewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;

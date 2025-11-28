@@ -2,10 +2,11 @@ import { useState } from 'react';
 import EditorCanvas from './components/EditorCanvas';
 import ControlsSidebar from './components/ControlsSidebar';
 import { generateCode } from './utils/generator';
+import type { Mode, Method, LineState, Lines } from './types';
 import './style.css';
 
 // Initial State (Standard Hamburger -> Cross)
-const INITIAL_LINES = [
+const INITIAL_LINES: Lines = [
   {
     menu: [{ x: 20, y: 30 }, { x: 80, y: 30 }],
     close: [{ x: 20, y: 20 }, { x: 80, y: 80 }]
@@ -21,9 +22,9 @@ const INITIAL_LINES = [
 ];
 
 function App() {
-  const [mode, setMode] = useState('menu'); // 'menu' or 'close'
-  const [method, setMethod] = useState('checkbox'); // 'checkbox' or 'class'
-  const [lines, setLines] = useState(JSON.parse(JSON.stringify(INITIAL_LINES)));
+  const [mode, setMode] = useState<Mode>('menu');
+  const [method, setMethod] = useState<Method>('checkbox');
+  const [lines, setLines] = useState<LineState[]>(JSON.parse(JSON.stringify(INITIAL_LINES)));
 
   const handleReset = () => {
     setLines(JSON.parse(JSON.stringify(INITIAL_LINES)));

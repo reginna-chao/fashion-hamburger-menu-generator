@@ -1,5 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import Preview from './Preview';
+import type { Mode, Method, GeneratedCode } from '../types';
+
+interface ControlsSidebarProps {
+  mode: Mode;
+  onModeChange: (mode: Mode) => void;
+  method: Method;
+  onMethodChange: (method: Method) => void;
+  generatedCode: GeneratedCode;
+}
 
 export default function ControlsSidebar({
   mode,
@@ -7,15 +16,17 @@ export default function ControlsSidebar({
   method,
   onMethodChange,
   generatedCode
-}) {
-  const codeDisplayRef = useRef(null);
+}: ControlsSidebarProps) {
+  const codeDisplayRef = useRef<HTMLElement>(null);
 
   const handleCopy = () => {
     const codeDisplay = codeDisplayRef.current;
     if (!codeDisplay) return;
 
-    navigator.clipboard.writeText(codeDisplay.textContent).then(() => {
+    navigator.clipboard.writeText(codeDisplay.textContent || '').then(() => {
       const btn = document.getElementById('btn-copy');
+      if (!btn) return;
+
       const originalText = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => {

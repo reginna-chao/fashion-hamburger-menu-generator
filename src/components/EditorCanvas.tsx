@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
+import type { Mode, LineState, DraggedPoint } from '../types';
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
-  const svgRef = useRef(null);
-  const activeLayerRef = useRef(null);
-  const ghostLayerRef = useRef(null);
-  const controlsLayerRef = useRef(null);
-  const [draggedPoint, setDraggedPoint] = useState(null);
+interface EditorCanvasProps {
+  mode: Mode;
+  lines: LineState[];
+  onLinesChange: (lines: LineState[]) => void;
+  onReset: () => void;
+}
+
+export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: EditorCanvasProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const activeLayerRef = useRef<SVGGElement>(null);
+  const ghostLayerRef = useRef<SVGGElement>(null);
+  const controlsLayerRef = useRef<SVGGElement>(null);
+  const [draggedPoint, setDraggedPoint] = useState<DraggedPoint | null>(null);
 
   // Render paths and controls
   useEffect(() => {
@@ -16,6 +24,8 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
     const activeLayer = activeLayerRef.current;
     const ghostLayer = ghostLayerRef.current;
     const controlsLayer = controlsLayerRef.current;
+
+    if (!activeLayer || !ghostLayer || !controlsLayer) return;
 
     // Clear layers
     activeLayer.innerHTML = '';
@@ -41,29 +51,32 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
       // Draw Controls for Active Path
       activePoints.forEach((point, pointIndex) => {
         const circle = document.createElementNS(SVG_NS, 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', 6);
+        circle.setAttribute('cx', point.x.toString());
+        circle.setAttribute('cy', point.y.toString());
+        circle.setAttribute('r', '6');
         circle.classList.add('control-point');
-        circle.dataset.lineIndex = index;
-        circle.dataset.pointIndex = pointIndex;
+        circle.dataset.lineIndex = index.toString();
+        circle.dataset.pointIndex = pointIndex.toString();
         controlsLayer.appendChild(circle);
       });
     });
   }, [lines, mode]);
 
-  const getSVGPoint = (event) => {
+  const getSVGPoint = (event: MouseEvent): DOMPoint => {
     const svg = svgRef.current;
+    if (!svg) throw new Error('SVG element not found');
+
     const pt = svg.createSVGPoint();
     pt.x = event.clientX;
     pt.y = event.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
+    return pt.matrixTransform(svg.getScreenCTM()!.inverse());
   };
 
-  const handleMouseDown = (e) => {
-    if (e.target.classList.contains('control-point')) {
-      const lineIndex = parseInt(e.target.dataset.lineIndex);
-      const pointIndex = parseInt(e.target.dataset.pointIndex);
+  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    const target = e.target as Element;
+    if (target.classList.contains('control-point')) {
+      const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
+      const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
       const currentPoint = lines[lineIndex][mode][pointIndex];
 
       setDraggedPoint({
@@ -75,7 +88,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
     }
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!draggedPoint) return;
 
     const pt = getSVGPoint(e);
@@ -99,7 +112,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
     y = Math.round(y / 5) * 5;
 
     // Update State
-    const newLines = JSON.parse(JSON.stringify(lines));
+    const newLines = JSON.parse(JSON.stringify(lines)) as LineState[];
     newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex] = { x, y };
     onLinesChange(newLines);
   };
@@ -109,6 +122,8 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }) {
   };
 
   useEffect(() => {
+    if (!draggedPoint) return;
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
