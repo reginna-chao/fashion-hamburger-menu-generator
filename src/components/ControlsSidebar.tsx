@@ -15,7 +15,7 @@ export default function ControlsSidebar({
   onModeChange,
   method,
   onMethodChange,
-  generatedCode
+  generatedCode,
 }: ControlsSidebarProps) {
   const codeDisplayRef = useRef<HTMLElement>(null);
 
@@ -84,7 +84,9 @@ export default function ControlsSidebar({
       <div className="control-group">
         <h2>Generated Code</h2>
         <div className="code-output">
-          <button className="btn-copy" id="btn-copy" onClick={handleCopy}>Copy</button>
+          <button className="btn-copy" id="btn-copy" onClick={handleCopy}>
+            Copy
+          </button>
           <code ref={codeDisplayRef} id="code-display">
             {generatedCode.fullCode}
           </code>

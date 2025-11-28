@@ -35,11 +35,5 @@ export default function Preview({ html, css, method }: PreviewProps) {
     }
   }, [html, css, method]);
 
-  return (
-    <div
-      ref={containerRef}
-      className="preview-box"
-      id="preview-container"
-    />
-  );
+  return <div ref={containerRef} className="preview-box" id="preview-container" />;
 }

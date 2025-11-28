@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Mode, LineState, DraggedPoint } from '../types';
 
-const SVG_NS = "http://www.w3.org/2000/svg";
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 interface EditorCanvasProps {
   mode: Mode;
@@ -38,13 +38,19 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
       // Draw Ghost Path (Reference)
       const ghostPath = document.createElementNS(SVG_NS, 'path');
-      ghostPath.setAttribute('d', `M ${ghostPoints[0].x} ${ghostPoints[0].y} L ${ghostPoints[1].x} ${ghostPoints[1].y}`);
+      ghostPath.setAttribute(
+        'd',
+        `M ${ghostPoints[0].x} ${ghostPoints[0].y} L ${ghostPoints[1].x} ${ghostPoints[1].y}`
+      );
       ghostPath.classList.add('ghost-path');
       ghostLayer.appendChild(ghostPath);
 
       // Draw Active Path
       const activePath = document.createElementNS(SVG_NS, 'path');
-      activePath.setAttribute('d', `M ${activePoints[0].x} ${activePoints[0].y} L ${activePoints[1].x} ${activePoints[1].y}`);
+      activePath.setAttribute(
+        'd',
+        `M ${activePoints[0].x} ${activePoints[0].y} L ${activePoints[1].x} ${activePoints[1].y}`
+      );
       activePath.classList.add('editor-path');
       activeLayer.appendChild(activePath);
 
@@ -69,7 +75,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     const pt = svg.createSVGPoint();
     pt.x = event.clientX;
     pt.y = event.clientY;
-    return pt.matrixTransform(svg.getScreenCTM()!.inverse());
+    const ctm = svg.getScreenCTM();
+    if (!ctm) throw new Error('Failed to get screen CTM');
+    return pt.matrixTransform(ctm.inverse());
   };
 
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -83,43 +91,46 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         lineIndex,
         pointIndex,
         originX: currentPoint.x,
-        originY: currentPoint.y
+        originY: currentPoint.y,
       });
     }
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!draggedPoint) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!draggedPoint) return;
 
-    const pt = getSVGPoint(e);
-    let x = pt.x;
-    let y = pt.y;
+      const pt = getSVGPoint(e);
+      let x = pt.x;
+      let y = pt.y;
 
-    // Shift Key: Axis Lock
-    if (e.shiftKey) {
-      const dx = Math.abs(x - draggedPoint.originX);
-      const dy = Math.abs(y - draggedPoint.originY);
+      // Shift Key: Axis Lock
+      if (e.shiftKey) {
+        const dx = Math.abs(x - draggedPoint.originX);
+        const dy = Math.abs(y - draggedPoint.originY);
 
-      if (dx > dy) {
-        y = draggedPoint.originY; // Lock Y (Horizontal movement)
-      } else {
-        x = draggedPoint.originX; // Lock X (Vertical movement)
+        if (dx > dy) {
+          y = draggedPoint.originY; // Lock Y (Horizontal movement)
+        } else {
+          x = draggedPoint.originX; // Lock X (Vertical movement)
+        }
       }
-    }
 
-    // Grid Snap (5px)
-    x = Math.round(x / 5) * 5;
-    y = Math.round(y / 5) * 5;
+      // Grid Snap (5px)
+      x = Math.round(x / 5) * 5;
+      y = Math.round(y / 5) * 5;
 
-    // Update State
-    const newLines = JSON.parse(JSON.stringify(lines)) as LineState[];
-    newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex] = { x, y };
-    onLinesChange(newLines);
-  };
+      // Update State
+      const newLines = JSON.parse(JSON.stringify(lines)) as LineState[];
+      newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex] = { x, y };
+      onLinesChange(newLines);
+    },
+    [draggedPoint, lines, mode, onLinesChange]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setDraggedPoint(null);
-  };
+  }, []);
 
   useEffect(() => {
     if (!draggedPoint) return;
@@ -131,20 +142,20 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggedPoint, lines, mode]);
+  }, [draggedPoint, handleMouseMove, handleMouseUp]);
 
   return (
     <div className="editor-area">
-      <svg
-        ref={svgRef}
-        id="editor-svg"
-        viewBox="0 0 100 100"
-        onMouseDown={handleMouseDown}
-      >
+      <svg ref={svgRef} id="editor-svg" viewBox="0 0 100 100" onMouseDown={handleMouseDown}>
         {/* Grid lines for reference */}
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+            <path
+              d="M 10 0 L 0 0 0 10"
+              fill="none"
+              stroke="rgba(255,255,255,0.05)"
+              strokeWidth="0.5"
+            />
           </pattern>
         </defs>
         <rect width="100" height="100" fill="url(#grid)" />
@@ -159,7 +170,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         <g ref={controlsLayerRef} id="controls-layer"></g>
       </svg>
 
-      <button className="btn-reset" onClick={onReset}>Reset</button>
+      <button className="btn-reset" onClick={onReset}>
+        Reset
+      </button>
     </div>
   );
 }

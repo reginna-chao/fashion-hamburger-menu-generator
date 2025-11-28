@@ -11,7 +11,11 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   height: 100vh;
@@ -195,17 +199,17 @@ h2 {
 }
 
 /* Color coding for control points to match their lines */
-.control-point[data-line-index="0"] {
+.control-point[data-line-index='0'] {
   fill: #ff6b6b;
   /* Red */
 }
 
-.control-point[data-line-index="1"] {
+.control-point[data-line-index='1'] {
   fill: #4ecdc4;
   /* Cyan */
 }
 
-.control-point[data-line-index="2"] {
+.control-point[data-line-index='2'] {
   fill: #ffe66d;
   /* Yellow */
 }
@@ -234,7 +238,7 @@ h2 {
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: all 0.8s cubic-bezier(.645, .045, .355, 1);
+  transition: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 /* Reset Button */
