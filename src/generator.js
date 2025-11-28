@@ -1,45 +1,45 @@
 export function generateCode(lines) {
   // lines is an array of 3 objects: { menu: [start, end], close: [start, end] }
   // We need to construct a single path for each line that connects menu -> close
-  
+
   const paths = lines.map((line, index) => {
     const { menu, close } = line;
-    
+
     // Construct the path data 'd'
     // M menuStart L menuEnd C cp1 cp2 closeStart L closeEnd
     // We need to calculate control points for a smooth connection
     // For now, let's use a simple curve
-    
+
     const dx = close[0].x - menu[1].x;
     const dy = close[0].y - menu[1].y;
-    
+
     const cp1 = { x: menu[1].x + dx * 0.5, y: menu[1].y };
     const cp2 = { x: close[0].x - dx * 0.5, y: close[0].y };
-    
+
     // Create a temporary path element to measure lengths
     const d = `M ${menu[0].x} ${menu[0].y} L ${menu[1].x} ${menu[1].y} C ${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${close[0].x} ${close[0].y} L ${close[1].x} ${close[1].y}`;
-    
+
     const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
     pathEl.setAttribute("d", d);
-    
+
     const totalLength = pathEl.getTotalLength();
-    
+
     // Measure segments
     // Segment 1: Menu Line
     const p1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
     p1.setAttribute("d", `M ${menu[0].x} ${menu[0].y} L ${menu[1].x} ${menu[1].y}`);
     const len1 = p1.getTotalLength();
-    
+
     // Segment 2: Connection
     const p2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
     p2.setAttribute("d", `M ${menu[1].x} ${menu[1].y} C ${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${close[0].x} ${close[0].y}`);
     const len2 = p2.getTotalLength();
-    
+
     // Segment 3: Close Line
     const p3 = document.createElementNS("http://www.w3.org/2000/svg", "path");
     p3.setAttribute("d", `M ${close[0].x} ${close[0].y} L ${close[1].x} ${close[1].y}`);
     const len3 = p3.getTotalLength();
-    
+
     return {
       d,
       totalLength,
@@ -98,9 +98,13 @@ ${paths.map((p, i) => `/* Line ${i + 1} */
 }`).join('\n')}
 
 .hamburger-menu input:checked + svg {
-${paths.map((p, i) => `  .line--${i + 1} {
-    stroke-dasharray: ${p.closeLength.toFixed(2)} ${p.totalLength.toFixed(2)};
+${paths.map((p, i) => {
+    // If the close line has zero length, hide it completely
+    const dashArray = p.closeLength < 0.1 ? '0 9999' : `${p.closeLength.toFixed(2)} ${p.totalLength.toFixed(2)}`;
+    return `  .line--${i + 1} {
+    stroke-dasharray: ${dashArray};
     stroke-dashoffset: ${p.offsetClose.toFixed(2)};
-  }`).join('\n')}
+  }`;
+  }).join('\n')}
 }`;
 }
