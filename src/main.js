@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const previewContainer = document.getElementById('preview-container');
   const codeDisplay = document.getElementById('code-display');
   const btnCopy = document.getElementById('btn-copy');
+  const btnReset = document.getElementById('btn-reset');
   const modeButtons = document.querySelectorAll('.btn-toggle');
 
   const editor = new Editor(svgElement, previewContainer, codeDisplay);
@@ -17,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
       editor.setMode(btn.dataset.mode);
     });
+  });
+
+  // Reset Functionality
+  btnReset.addEventListener('click', () => {
+    editor.reset();
   });
 
   // Copy Functionality

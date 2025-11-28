@@ -14,7 +14,7 @@ export class Editor {
         this.mode = 'menu'; // 'menu' or 'close'
 
         // Initial State (Standard Hamburger -> Cross)
-        this.lines = [
+        this.initialLines = [
             {
                 menu: [{ x: 20, y: 30 }, { x: 80, y: 30 }],
                 close: [{ x: 20, y: 20 }, { x: 80, y: 80 }]
@@ -29,6 +29,9 @@ export class Editor {
             }
         ];
 
+        // Deep copy initial state
+        this.lines = JSON.parse(JSON.stringify(this.initialLines));
+
         this.draggedPoint = null;
         this.init();
     }
@@ -36,6 +39,13 @@ export class Editor {
     init() {
         this.render();
         this.attachEvents();
+        this.updateOutput();
+    }
+
+    reset() {
+        // Reset to initial state
+        this.lines = JSON.parse(JSON.stringify(this.initialLines));
+        this.render();
         this.updateOutput();
     }
 
