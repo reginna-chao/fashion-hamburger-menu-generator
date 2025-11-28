@@ -3,7 +3,7 @@ import EditorCanvas from './components/EditorCanvas';
 import ControlsSidebar from './components/ControlsSidebar';
 import { generateCode } from './utils/generator';
 import type { Mode, Method, LineState, Lines } from './types';
-import './style.css';
+import './style.scss';
 
 // Initial State (Standard Hamburger -> Cross)
 const INITIAL_LINES: Lines = [
