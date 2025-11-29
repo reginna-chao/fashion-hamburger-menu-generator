@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, ArrowLeftRight } from 'lucide-react';
 import Button from './ui/Button';
 import { createDefaultLine, getLineColor } from '@/utils/colors';
 import type { Lines } from '../types';
@@ -24,6 +24,14 @@ export default function LineManager({ lines, onLinesChange }: LineManagerProps) 
     if (lines.length <= MIN_LINES) return;
 
     const newLines = lines.filter((_, i) => i !== index);
+    onLinesChange(newLines);
+  };
+
+  const handleReverseLine = (index: number) => {
+    const newLines = JSON.parse(JSON.stringify(lines));
+    // Reverse both menu and close states
+    newLines[index].menu.reverse();
+    newLines[index].close.reverse();
     onLinesChange(newLines);
   };
 
@@ -57,15 +65,25 @@ export default function LineManager({ lines, onLinesChange }: LineManagerProps) 
                 </span>
               </div>
 
-              <Button
-                onClick={() => handleDeleteLine(index)}
-                disabled={lines.length <= MIN_LINES}
-                variant="ghost"
-                size="small"
-                title={lines.length <= MIN_LINES ? 'Cannot delete last line' : 'Delete line'}
-              >
-                <Trash2 size={16} />
-              </Button>
+              <div className={styles.lineActions}>
+                <Button
+                  onClick={() => handleReverseLine(index)}
+                  variant="ghost"
+                  size="small"
+                  title="Reverse line direction"
+                >
+                  <ArrowLeftRight size={16} />
+                </Button>
+                <Button
+                  onClick={() => handleDeleteLine(index)}
+                  disabled={lines.length <= MIN_LINES}
+                  variant="ghost"
+                  size="small"
+                  title={lines.length <= MIN_LINES ? 'Cannot delete last line' : 'Delete line'}
+                >
+                  <Trash2 size={16} />
+                </Button>
+              </div>
             </div>
           );
         })}

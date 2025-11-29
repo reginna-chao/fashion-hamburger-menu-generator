@@ -68,3 +68,9 @@
   color: var(--text-secondary);
   margin-left: auto;
 }
+
+.lineActions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
