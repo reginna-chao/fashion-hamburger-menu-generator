@@ -3,9 +3,14 @@ export interface Point {
   y: number;
 }
 
+// PathPoint 用於 Bezier 曲線，區分錨點與控制點
+export interface PathPoint extends Point {
+  type: 'anchor' | 'control';
+}
+
 export interface LineState {
-  menu: [Point, Point];
-  close: [Point, Point];
+  menu: PathPoint[];
+  close: PathPoint[];
 }
 
 export type Lines = [LineState, LineState, LineState];
@@ -41,3 +46,6 @@ export interface DraggedPoint {
   originX: number;
   originY: number;
 }
+
+// 工具類型
+export type Tool = 'select' | 'pen-add' | 'pen-remove';

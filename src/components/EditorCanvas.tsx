@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Button from './ui/Button';
-import type { Mode, LineState, DraggedPoint } from '../types';
+import Toolbar from './Toolbar';
+import type { Mode, LineState, DraggedPoint, Tool } from '../types';
 import styles from './EditorCanvas.module.scss';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -23,6 +24,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     lineIndex: number;
     pointIndex: number;
   } | null>(null);
+  const [activeTool, setActiveTool] = useState<Tool>('select');
 
   // Render paths and controls
   useEffect(() => {
@@ -174,7 +176,12 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
       // Update State
       const newLines = JSON.parse(JSON.stringify(lines)) as LineState[];
-      newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex] = { x, y };
+      const currentPoint = newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex];
+      newLines[draggedPoint.lineIndex][mode][draggedPoint.pointIndex] = {
+        ...currentPoint,
+        x,
+        y,
+      };
       onLinesChange(newLines);
     },
     [draggedPoint, lines, mode, onLinesChange]
@@ -198,6 +205,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
   return (
     <div className={styles.editorArea}>
+      <Toolbar activeTool={activeTool} onToolChange={setActiveTool} />
       <svg
         ref={svgRef}
         className={styles.editorSvg}
