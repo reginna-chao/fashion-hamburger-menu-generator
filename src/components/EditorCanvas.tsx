@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import Button from './ui/Button';
 import Toolbar from './Toolbar';
+import { getLineColor } from '@/utils/colors';
 import type { Mode, LineState, DraggedPoint, Tool, PathPoint } from '../types';
 import styles from './EditorCanvas.module.scss';
 
@@ -117,10 +118,13 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         activePath.setAttribute('d', activePathD);
         activePath.classList.add(styles.editorPath);
         activePath.dataset.lineIndex = index.toString();
+        const lineColor = getLineColor(index, line.color);
+        activePath.setAttribute('stroke', lineColor);
         activeLayer.appendChild(activePath);
       }
 
       // Draw Controls for Active Path (anchor points only)
+      const lineColor = getLineColor(index, line.color);
       activePoints.forEach((point, pointIndex) => {
         if (point.type === 'anchor') {
           const circle = document.createElementNS(SVG_NS, 'circle');
@@ -128,6 +132,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
           circle.setAttribute('cy', point.y.toString());
           circle.setAttribute('r', '6');
           circle.classList.add(styles.controlPoint);
+          circle.setAttribute('fill', lineColor);
 
           // Add focused class if this point is focused
           if (
@@ -233,6 +238,12 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       previewCircle.setAttribute('r', '4.8');
       previewCircle.classList.add(styles.penAddPreview);
       previewCircle.dataset.lineIndex = penAddPreview.lineIndex.toString();
+      const previewColor = getLineColor(
+        penAddPreview.lineIndex,
+        lines[penAddPreview.lineIndex]?.color
+      );
+      previewCircle.setAttribute('fill', previewColor);
+      previewCircle.setAttribute('stroke', previewColor);
       connectionLayer.appendChild(previewCircle);
 
       // Plus icon in the center

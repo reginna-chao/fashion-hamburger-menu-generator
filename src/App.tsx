@@ -5,6 +5,7 @@ import EditorCanvas from '@/components/EditorCanvas';
 import ControlsSidebar from '@/components/ControlsSidebar';
 import CodePanel from '@/components/CodePanel';
 import SegmentedControl from '@/components/ui/SegmentedControl';
+import ThemeToggle from '@/components/ThemeToggle';
 import { generateCode } from '@/utils/generator';
 import type { Mode, Method, LineState, Lines, ClassNameConfig } from './types';
 import '@/styles/global.scss';
@@ -101,6 +102,8 @@ function App() {
           />
         </div>
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <ThemeToggle />
         <a
           href="https://github.com/reginna-chao/morphbar"
           target="_blank"
@@ -115,6 +118,7 @@ function App() {
             ></path>
           </svg>
         </a>
+        </div>
       </header>
 
       <main>

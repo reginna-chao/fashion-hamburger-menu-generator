@@ -11,6 +11,7 @@ export interface PathPoint extends Point {
 export interface LineState {
   menu: PathPoint[];
   close: PathPoint[];
+  color?: string; // Optional custom color for the line
 }
 
 export type Lines = [LineState, LineState, LineState];

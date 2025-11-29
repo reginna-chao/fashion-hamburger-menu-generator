@@ -1,5 +1,6 @@
 .previewBox {
-  background: var(--input-bg);
+  background: #1a1a1a;
+  border: 1px solid #333;
   border-radius: 12px;
   padding: 2rem;
   @include flex-center;
@@ -8,7 +9,7 @@
   transition: background 0.3s;
 
   &:hover {
-    background: $border-color;
+    background: #222;
   }
 }
 

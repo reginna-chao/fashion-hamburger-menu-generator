@@ -1,6 +1,6 @@
 @use './variables.scss' as *;
 
-// CSS Variables
+// CSS Variables - Dark Theme (default)
 :root {
   --bg-color: #{$bg-color};
   --surface-color: #{$surface-color};
@@ -13,6 +13,27 @@
   --color-red: #{$color-red};
   --color-cyan: #{$color-cyan};
   --color-yellow: #{$color-yellow};
+  --editor-grid-color: rgba(255, 255, 255, 0.05);
+  --editor-bg: rgba(255, 255, 255, 0.05);
+  --ghost-path-color: rgba(255, 255, 255, 0.1);
+}
+
+// Light Theme
+:root[data-theme='light'] {
+  --bg-color: #f5f5f5;
+  --surface-color: #ffffff;
+  --primary-color: #3f77e9;
+  --text-color: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --input-bg: #f8f8f8;
+  --success-color: #2ecc71;
+  --color-red: #ff6b6b;
+  --color-cyan: #4ecdc4;
+  --color-yellow: #ffb700;
+  --editor-grid-color: rgba(0, 0, 0, 0.05);
+  --editor-bg: rgba(0, 0, 0, 0.02);
+  --ghost-path-color: rgba(0, 0, 0, 0.1);
 }
 
 // Global styles
