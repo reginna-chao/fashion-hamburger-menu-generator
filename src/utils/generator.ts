@@ -1,4 +1,11 @@
-import type { LineState, Method, PathData, GeneratedCode, ClassNameConfig, PathPoint } from '../types';
+import type {
+  LineState,
+  Method,
+  PathData,
+  GeneratedCode,
+  ClassNameConfig,
+  PathPoint,
+} from '../types';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -6,7 +13,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 function generatePathString(points: PathPoint[]): string {
   if (points.length < 2) return '';
 
-  const anchors = points.filter(p => p.type === 'anchor');
+  const anchors = points.filter((p) => p.type === 'anchor');
   if (anchors.length < 2) return '';
 
   // Simplified version: Currently connects all anchor points with straight lines
@@ -47,8 +54,8 @@ export function generateCode(
 function calculatePathData(line: LineState): PathData {
   const { menu, close } = line;
 
-  const menuAnchors = menu.filter(p => p.type === 'anchor');
-  const closeAnchors = close.filter(p => p.type === 'anchor');
+  const menuAnchors = menu.filter((p) => p.type === 'anchor');
+  const closeAnchors = close.filter((p) => p.type === 'anchor');
 
   if (menuAnchors.length < 2 || closeAnchors.length < 2) {
     // Handle error case
@@ -90,7 +97,10 @@ function calculatePathData(line: LineState): PathData {
   const closeLength = closeEl.getTotalLength();
 
   const connectionEl = document.createElementNS(SVG_NS, 'path');
-  connectionEl.setAttribute('d', `M ${menuLast.x} ${menuLast.y} C ${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${closeFirst.x} ${closeFirst.y}`);
+  connectionEl.setAttribute(
+    'd',
+    `M ${menuLast.x} ${menuLast.y} C ${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${closeFirst.x} ${closeFirst.y}`
+  );
   const connectionLength = connectionEl.getTotalLength();
 
   return {
