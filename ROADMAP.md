@@ -146,13 +146,31 @@ MorphBar 是一個漢堡選單圖示動畫生成器，允許使用者視覺化�
   - 垂直鏡射：`newX = axisX + (axisX - oldX)`
 - **UI 設計挑戰**：選擇介面較複雜
 
-**6. Menu/Close 水平移動距離** ⭐⭐⭐
+**6. 動畫水平位移效果** ⭐⭐⭐
 
-- **說明**：批次調整特定狀態的 X 軸偏移
-- **UI**：兩個 slider
-  - Menu X Offset: -50 ~ +50
-  - Close X Offset: -50 ~ +50
-- **用途**：快速調整展開/收合時的水平位置
+- **說明**：在動畫過程中整個圖標會水平位移，增加動態效果（視覺上從原位移動再回到原位）
+- **實作方式**：
+  - 在生成的 HTML 中添加 `<g>` 包裹層
+  - 使用 CSS `transform: translateX()` 實現位移
+  - 位移與線條變形同時發生
+  - 動畫結束時回到原位（使用者看到的最終位置不變）
+- **UI 控制**：
+  - Slider 或 Number Input：-100 ~ 100 (px)
+  - 預設值：0 (無位移)
+  - 位置：Code Panel > Animation Settings
+- **影響範圍**：
+  - `src/utils/generator.ts` - HTML 和 CSS 生成邏輯
+  - `src/types/index.ts` - 新增 AnimationConfig 或擴充 SizeConfig
+  - `src/components/CodePanel.tsx` - 新增控制 UI
+- **參考範例**：
+  ```css
+  .svg-group {
+    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  .is-active .svg-group {
+    transform: translateX(-45px);
+  }
+  ```
 
 **5. 對齊輔助線** ⭐⭐⭐⭐⭐
 
