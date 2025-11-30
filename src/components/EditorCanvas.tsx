@@ -5,6 +5,7 @@ import Toolbar from './Toolbar';
 import { getLineColor } from '@/utils/colors';
 import type { Mode, LineState, DraggedPoint, Tool, PathPoint } from '../types';
 import styles from './EditorCanvas.module.scss';
+import { RotateCw } from 'lucide-react';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -605,7 +606,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         <g ref={controlsLayerRef} id="controls-layer"></g>
       </svg>
 
-      <Button className={styles.btnReset} onClick={onReset}>
+      <Button className={styles.btnReset} startIcon={<RotateCw />} onClick={onReset}>
         Reset
       </Button>
     </div>

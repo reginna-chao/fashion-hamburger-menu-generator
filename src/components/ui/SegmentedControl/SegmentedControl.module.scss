@@ -23,6 +23,19 @@
     box-shadow: 0 2px 4px rgba($black, 0.2);
   }
 
+  &.btnWithIcon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
   &:hover:not(.active) {
     background-color: rgba($white, 0.05);
   }

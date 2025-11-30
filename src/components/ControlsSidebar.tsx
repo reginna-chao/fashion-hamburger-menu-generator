@@ -3,6 +3,7 @@ import SegmentedControl from './ui/SegmentedControl';
 import LineManager from './LineManager';
 import type { Mode, Method, GeneratedCode, Lines } from '../types';
 import styles from './ControlsSidebar.module.scss';
+import { Menu, X } from 'lucide-react';
 
 interface ControlsSidebarProps {
   mode: Mode;
@@ -31,8 +32,8 @@ export default function ControlsSidebar({
         <h2>Edit State</h2>
         <SegmentedControl
           options={[
-            { value: 'menu', label: 'Menu (Hamburger)' },
-            { value: 'close', label: 'Close (Active)' },
+            { value: 'menu', label: 'Menu (Hamburger)', icon: <Menu /> },
+            { value: 'close', label: 'Close (Active)', icon: <X /> },
           ]}
           value={mode}
           onChange={onModeChange}

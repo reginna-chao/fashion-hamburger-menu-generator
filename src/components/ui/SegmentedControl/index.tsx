@@ -3,6 +3,7 @@ import styles from './SegmentedControl.module.scss';
 interface Option<T extends string> {
   value: T;
   label: string;
+  icon?: React.ReactNode;
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -21,10 +22,11 @@ export default function SegmentedControl<T extends string>({
       {options.map((option) => (
         <button
           key={option.value}
-          className={`${styles.button} ${value === option.value ? styles.active : ''}`}
+          className={`${styles.button} ${value === option.value ? styles.active : ''} ${option.icon ? styles.btnWithIcon : ''}`}
           onClick={() => onChange(option.value)}
         >
-          {option.label}
+          {option.icon && <span>{option.icon}</span>}
+          <span>{option.label}</span>
         </button>
       ))}
     </div>

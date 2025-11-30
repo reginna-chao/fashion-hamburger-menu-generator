@@ -32,12 +32,12 @@
   }
 
   &.active {
-    background: var(--color-cyan);
-    border-color: var(--color-cyan);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     color: $white;
 
     &:hover {
-      background: var(--color-cyan);
+      background: var(--primary-color);
       filter: brightness(1.1);
     }
   }

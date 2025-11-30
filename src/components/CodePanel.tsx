@@ -3,6 +3,7 @@ import Button from './ui/Button';
 import SegmentedControl from './ui/SegmentedControl';
 import type { GeneratedCode, Method, ClassNameConfig, SizeConfig } from '../types';
 import styles from './CodePanel.module.scss';
+import { Copy } from 'lucide-react';
 
 interface CodePanelProps {
   generatedCode: GeneratedCode;
@@ -45,7 +46,7 @@ export default function CodePanel({
     <div className={styles.codePanel}>
       <div className={styles.codePanelHeader}>
         <h2>Generated Code</h2>
-        <Button variant="primary" id="btn-copy" onClick={handleCopy}>
+        <Button variant="primary" id="btn-copy" startIcon={<Copy />} onClick={handleCopy}>
           Copy Code
         </Button>
       </div>

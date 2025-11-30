@@ -8,6 +8,19 @@
   &:active {
     transform: translateY(0);
   }
+
+  &.btnWithIcon {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
 }
 
 // Variants
@@ -32,6 +45,7 @@
   &:hover {
     background: var(--primary-color);
     border-color: var(--primary-color);
+    color: $white;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba($primary-color, 0.3);
   }
