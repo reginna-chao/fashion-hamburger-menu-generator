@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import Button from './ui/Button';
 import Toolbar from './Toolbar';
 import { getLineColor } from '@/utils/colors';
+import { toastOptions } from '@/config/toast';
 import type { Mode, LineState, DraggedPoint, Tool, PathPoint } from '../types';
 import styles from './EditorCanvas.module.scss';
 import { RotateCw } from 'lucide-react';
@@ -307,14 +308,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         setHoveredPoint(null); // Clear hover state to prevent accessing deleted point
         onLinesChange(newLines);
       } else {
-        toast.error('A line must have at least two points', {
-          position: 'top-center',
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error('A line must have at least two points', toastOptions.error);
       }
       return;
     }

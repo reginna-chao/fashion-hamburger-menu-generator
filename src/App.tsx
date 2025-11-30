@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditorCanvas from '@/components/EditorCanvas';
 import ControlsSidebar from '@/components/ControlsSidebar';
@@ -7,6 +7,7 @@ import CodePanel from '@/components/CodePanel';
 import SegmentedControl from '@/components/ui/SegmentedControl';
 import ThemeToggle from '@/components/ThemeToggle';
 import { generateCode } from '@/utils/generator';
+import { toastContainerConfig, toastOptions } from '@/config/toast';
 import type { Mode, Method, LineState, Lines, ClassNameConfig, SizeConfig } from './types';
 import '@/styles/global.scss';
 import logoLight from '@/assets/images/logomark-light.svg';
@@ -64,24 +65,14 @@ function App() {
 
   const handleReset = () => {
     setLines(JSON.parse(JSON.stringify(INITIAL_LINES)));
+    toast.success('Reset successful', toastOptions.success);
   };
 
   const generatedCode = generateCode(lines, method, classNameConfig, sizeConfig);
 
   return (
     <>
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+      <ToastContainer {...toastContainerConfig} />
       <header>
         <div className="header-left">
           <h1 className="header-logo">
