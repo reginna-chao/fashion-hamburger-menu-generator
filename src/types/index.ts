@@ -11,9 +11,10 @@ export interface PathPoint extends Point {
 export interface LineState {
   menu: PathPoint[];
   close: PathPoint[];
+  color?: string; // Optional custom color for the line
 }
 
-export type Lines = [LineState, LineState, LineState];
+export type Lines = LineState[];
 
 export type Mode = 'menu' | 'close';
 
@@ -38,6 +39,11 @@ export interface GeneratedCode {
 export interface ClassNameConfig {
   baseClass: string;
   activeClass: string;
+}
+
+export interface SizeConfig {
+  width: number; // in pixels
+  strokeWidth: number; // SVG stroke width
 }
 
 export interface DraggedPoint {

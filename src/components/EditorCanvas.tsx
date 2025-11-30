@@ -2,8 +2,11 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import Button from './ui/Button';
 import Toolbar from './Toolbar';
+import { getLineColor } from '@/utils/colors';
+import { toastOptions } from '@/config/toast';
 import type { Mode, LineState, DraggedPoint, Tool, PathPoint } from '../types';
 import styles from './EditorCanvas.module.scss';
+import { RotateCw } from 'lucide-react';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -111,12 +114,14 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       }
 
       // Draw Active Path
+      const lineColor = getLineColor(index, line.color);
       const activePathD = generatePathD(activePoints);
       if (activePathD) {
         const activePath = document.createElementNS(SVG_NS, 'path');
         activePath.setAttribute('d', activePathD);
         activePath.classList.add(styles.editorPath);
         activePath.dataset.lineIndex = index.toString();
+        activePath.setAttribute('stroke', lineColor);
         activeLayer.appendChild(activePath);
       }
 
@@ -128,6 +133,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
           circle.setAttribute('cy', point.y.toString());
           circle.setAttribute('r', '6');
           circle.classList.add(styles.controlPoint);
+          circle.setAttribute('fill', lineColor);
 
           // Add focused class if this point is focused
           if (
@@ -167,7 +173,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     });
 
     // Draw connection and highlight corresponding path when hovering a point
-    if (hoveredPoint !== null) {
+    if (hoveredPoint !== null && hoveredPoint.lineIndex < lines.length) {
       const { lineIndex, pointIndex, isHeadOrTail } = hoveredPoint;
       const oppositeMode = mode === 'menu' ? 'close' : 'menu';
       const correspondingPoints = lines[lineIndex][oppositeMode];
@@ -225,7 +231,11 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     }
 
     // Draw Pen+ preview (semi-transparent circle with + icon)
-    if (penAddPreview !== null && activeTool === 'pen-add') {
+    if (
+      penAddPreview !== null &&
+      activeTool === 'pen-add' &&
+      penAddPreview.lineIndex < lines.length
+    ) {
       // Circle (80% size = radius 4.8)
       const previewCircle = document.createElementNS(SVG_NS, 'circle');
       previewCircle.setAttribute('cx', penAddPreview.x.toString());
@@ -233,6 +243,12 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       previewCircle.setAttribute('r', '4.8');
       previewCircle.classList.add(styles.penAddPreview);
       previewCircle.dataset.lineIndex = penAddPreview.lineIndex.toString();
+      const previewColor = getLineColor(
+        penAddPreview.lineIndex,
+        lines[penAddPreview.lineIndex]?.color
+      );
+      previewCircle.setAttribute('fill', previewColor);
+      previewCircle.setAttribute('stroke', previewColor);
       connectionLayer.appendChild(previewCircle);
 
       // Plus icon in the center
@@ -268,7 +284,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     if (target.classList.contains(styles.controlPoint)) {
       const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
       const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
-      setFocusedPoint({ lineIndex, pointIndex });
+      if (lineIndex < lines.length) {
+        setFocusedPoint({ lineIndex, pointIndex });
+      }
     } else {
       // Clear focus when clicking elsewhere
       setFocusedPoint(null);
@@ -279,6 +297,8 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
       const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
 
+      if (lineIndex >= lines.length) return;
+
       const newLines = JSON.parse(JSON.stringify(lines)) as LineState[];
       const anchors = newLines[lineIndex][mode].filter((p) => p.type === 'anchor');
 
@@ -288,14 +308,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         setHoveredPoint(null); // Clear hover state to prevent accessing deleted point
         onLinesChange(newLines);
       } else {
-        toast.error('A line must have at least two points', {
-          position: 'top-center',
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error('A line must have at least two points', toastOptions.error);
       }
       return;
     }
@@ -309,6 +322,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
             target.parentElement?.getAttribute('data-line-index') ||
             '0'
         );
+
+        if (lineIndex >= lines.length) return;
+
         const pt = getSVGPoint(e.nativeEvent as unknown as MouseEvent);
 
         // Grid snap
@@ -350,6 +366,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
       // Case 2: Click blank area - if head/tail point is focused, extend with new point
       if (
         focusedPoint &&
+        focusedPoint.lineIndex < lines.length &&
         !target.classList.contains(styles.controlPoint) &&
         !target.classList.contains(styles.editorPath)
       ) {
@@ -396,6 +413,9 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     ) {
       const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
       const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
+
+      if (lineIndex >= lines.length) return;
+
       const currentPoint = lines[lineIndex][mode][pointIndex];
 
       setDraggedPoint({
@@ -412,6 +432,8 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
     if (target.classList.contains(styles.controlPoint)) {
       const lineIndex = parseInt(target.getAttribute('data-line-index') || '0');
       const pointIndex = parseInt(target.getAttribute('data-point-index') || '0');
+
+      if (lineIndex >= lines.length) return;
 
       // Check if this point is head or tail (first or last anchor)
       const anchorIndices = lines[lineIndex][mode]
@@ -452,7 +474,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         setShowCrosshairCursor(false);
       } else if (!target.classList.contains(styles.controlPoint)) {
         // Check if there is a focused head or tail point
-        if (focusedPoint) {
+        if (focusedPoint && focusedPoint.lineIndex < lines.length) {
           const currentPoints = lines[focusedPoint.lineIndex][mode];
           const anchorIndices = currentPoints
             .map((p, i) => (p.type === 'anchor' ? i : -1))
@@ -488,7 +510,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (!draggedPoint) return;
+      if (!draggedPoint || draggedPoint.lineIndex >= lines.length) return;
 
       const pt = getSVGPoint(e);
       let x = pt.x;
@@ -578,7 +600,7 @@ export default function EditorCanvas({ mode, lines, onLinesChange, onReset }: Ed
         <g ref={controlsLayerRef} id="controls-layer"></g>
       </svg>
 
-      <Button className={styles.btnReset} onClick={onReset}>
+      <Button className={styles.btnReset} startIcon={<RotateCw />} onClick={onReset}>
         Reset
       </Button>
     </div>

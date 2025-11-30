@@ -1,6 +1,6 @@
 @use './variables.scss' as *;
 
-// CSS Variables
+// CSS Variables - Dark Theme (default)
 :root {
   --bg-color: #{$bg-color};
   --surface-color: #{$surface-color};
@@ -13,6 +13,27 @@
   --color-red: #{$color-red};
   --color-cyan: #{$color-cyan};
   --color-yellow: #{$color-yellow};
+  --editor-grid-color: rgba(255, 255, 255, 0.05);
+  --editor-bg: rgba(255, 255, 255, 0.05);
+  --ghost-path-color: rgba(255, 255, 255, 0.1);
+}
+
+// Light Theme
+:root[data-theme='light'] {
+  --bg-color: #f5f5f5;
+  --surface-color: #ffffff;
+  --primary-color: #{$primary-color};
+  --text-color: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --input-bg: #f8f8f8;
+  --success-color: #2ecc71;
+  --color-red: #ff6b6b;
+  --color-cyan: #4ecdc4;
+  --color-yellow: #ffb700;
+  --editor-grid-color: rgba(0, 0, 0, 0.05);
+  --editor-bg: rgba(0, 0, 0, 0.02);
+  --ghost-path-color: rgba(0, 0, 0, 0.1);
 }
 
 // Global styles
@@ -75,7 +96,7 @@ h2 {
 // Layout
 main {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  grid-template-columns: 1fr 400px;
   flex: 1;
   height: calc(100vh - 60px - 32px); // Header (60px) - Footer (32px)
 }
@@ -111,4 +132,32 @@ footer {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-style: normal;
+}
+
+// Tooltip Styles
+.react-tooltip {
+  background-color: var(--text-color) !important;
+  color: var(--surface-color) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 0.75rem !important;
+  font-family: 'Poppins', sans-serif !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+  transition: opacity 0.2s ease-in-out !important;
+}
+
+// Tooltip arrow
+.react-tooltip-arrow {
+  border-top-color: var(--border-color) !important;
+  border-bottom-color: var(--border-color) !important;
+  border-left-color: var(--border-color) !important;
+  border-right-color: var(--border-color) !important;
+}
+
+// Light theme specific adjustments
+:root[data-theme='light'] .react-tooltip {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
 }

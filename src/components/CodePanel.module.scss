@@ -3,7 +3,6 @@
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  width: 350px;
   overflow: hidden;
 }
 
@@ -28,7 +27,8 @@
   gap: 2rem;
 
   .codeOutput {
-    background: $black;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
     font-family: 'Fira Code', monospace;
