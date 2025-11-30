@@ -1,34 +1,4 @@
-// SASS Variables
-$bg-color: #121314;
-$surface-color: #1e1f20;
-$primary-color: #3f77e9;
-$primary-light-color: #00aef6;
-$text-color: #ffffff;
-$text-secondary: #a0a0a0;
-$border-color: #333;
-$input-bg: #2a2b2c;
-$success-color: #2ecc71;
-
-// Colors for editor paths
-$color-red: #ff6b6b;
-$color-cyan: #4ecdc4;
-$color-yellow: #ffe66d;
-
-$white: #fff;
-$black: #000;
-
-// Mixins
-@mixin flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@mixin button-base {
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-}
+@use './variables.scss' as *;
 
 // CSS Variables
 :root {
@@ -73,14 +43,25 @@ header {
   gap: 0.25rem;
 }
 
-h1 {
+.header-logo {
+  display: flex;
+  align-items: center;
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  background: linear-gradient(45deg, $primary-color, $primary-light-color);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+
+  .strong-text {
+    background: linear-gradient(-90deg, $primary-color, $primary-light-color);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  picture {
+    display: inline-block;
+    line-height: 0;
+    margin-right: 0.5rem;
+  }
 }
 
 h2 {

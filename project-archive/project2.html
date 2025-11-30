@@ -15,66 +15,51 @@
             background: transparent;
         }
 
-        /* --- .ham 區塊 --- */
+        /* --- .ham --- */
         .ham {
-            /* rem-calc(-20) -> -20 / 16 */
             margin-right: -1.25rem;
-            /* rem-calc(10) -> 10 / 16 */
             margin-left: 0.625rem;
             padding: 0.625rem;
             border-radius: 50%;
             cursor: pointer;
         }
 
-        /* @include media-breakpoint-up(md) */
         @media (min-width: 768px) {
             .ham {
-                /* rem-calc(-18) -> -18 / 16 */
                 margin-right: -1.125rem;
             }
         }
 
-        /* @include media-breakpoint-hover */
         @media (hover: hover) {
             .ham {
                 transition: 0.3s;
-                /* $transition-time-normal */
             }
 
             .ham:hover,
             .ham:focus {
-                /* rgba($primary-color, 5%) 假設主色為藍色 */
                 background-color: rgba(13, 110, 253, 0.05);
                 transition-duration: 0.15s;
-                /* $transition-time-hover */
             }
         }
 
-        /* --- .svg 區塊 --- */
         .svg {
             pointer-events: none;
         }
 
-        /* @include media-breakpoint-down(md) */
         @media (max-width: 767.98px) {
             .svg {
-                /* 28 / 40 = 0.7 */
                 transform: scale(0.7);
             }
         }
 
-        /* --- .g 與路徑動畫區塊 --- */
         .g {
             transition: transform 0.3s;
-            /* $transition-time-normal */
         }
 
-        /* 這裡是 @extend %path 的展開結果 */
         .top,
         .center,
         .bottom {
             transition: stroke-dashoffset 0.3s;
-            /* $transition-time-normal */
         }
 
         .top {
@@ -92,7 +77,6 @@
             stroke-dashoffset: 128px;
         }
 
-        /* --- .active 狀態區塊 --- */
         .is-menu-open .g {
             transform: translateX(-40px);
         }
@@ -123,7 +107,7 @@
         }
 
         /* SASS version
-        // 漢堡選單
+        // Hamburger Menu
         .ham {
             $root: &;
 

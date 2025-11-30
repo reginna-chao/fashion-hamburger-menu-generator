@@ -6,6 +6,8 @@ import SegmentedControl from '@/components/ui/SegmentedControl';
 import { generateCode } from '@/utils/generator';
 import type { Mode, Method, LineState, Lines, ClassNameConfig } from './types';
 import '@/styles/global.scss';
+import logoLight from '@/assets/images/logomark-light.svg';
+import logoDark from '@/assets/images/logomark-dark.svg';
 
 // Initial State (Standard Hamburger -> Cross)
 const INITIAL_LINES: Lines = [
@@ -63,7 +65,15 @@ function App() {
     <>
       <header>
         <div className="header-left">
-          <h1>MorphBar</h1>
+          <h1 className="header-logo">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcSet={logoDark} />
+              <source media="(prefers-color-scheme: light)" srcSet={logoLight} />
+              <img alt="Logomark" src={logoLight} width={32} height={32} />
+            </picture>
+            <span className="strong-text">Morph</span>
+            <span>Bar</span>
+          </h1>
         </div>
 
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
